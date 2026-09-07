@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Unit 11 and 12 Assessment</title>
+<style>
+  /* ======================= VARIABLES DE DISEÑO ======================= */
+  :root{
+    --navy:#152a52;
+    --blue:#2563eb;
+    --blue-dark:#1d4ed8;
+    --ink:#172033;
+    --muted:#5b6475;
+    --canvas:#f4f7fb;
+    --paper:#fff;
+    --soft-blue:#edf4ff;
+    --soft-green:#eefaf2;
+    --soft-red:#fff1f1;
+    --soft-amber:#fff8e8;
+    --green:#15803d;
+    --red:#b42318;
+    --amber:#a65d00;
+    --shadow:0 16px 42px rgba(21,42,82,.13);
+  }
+  *{box-sizing:border-box}
+  html,body,#app{min-height:100%;margin:0}
+  body{font-family:Arial,Helvetica,sans-serif;background:var(--canvas);color:var(--ink);line-height:1.45}
+  button,input{font:inherit}
+  button{cursor:pointer}
+  button:disabled{cursor:not-allowed;opacity:.5}
+  body.exam-active{user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
+
+  .topbar{background:linear-gradient(120deg,var(--navy),#244f94);color:#fff;padding:18px max(20px,calc((100% - 1120px)/2));display:flex;align-items:center;justify-content:space-between;gap:18px}
+  .brand{font-size:1.04rem;font-weight:700;letter-spacing:.02em}
+  .topic-badge{padding:7px 12px;border:1px solid rgba(255,255,255,.35);border-radius:999px;font-size:.78rem;font-weight:700}
+  .pagewidth{width:min(1120px,calc(100% - 32px));margin:0 auto;padding:30px 0 48px}
+
+  .home{min-height:100vh;display:grid;place-items:center;padding:32px 16px;
+    background:radial-gradient(circle at 12% 8%,#dceafe 0,transparent 32%),
+               radial-gradient(circle at 90% 88%,#cef4ed 0,transparent 27%),
+               var(--canvas)}
+  .home-card{width:min(760px,100%);border-radius:22px;overflow:hidden;background:var(--paper);box-shadow:var(--shadow);border:1px solid #fff}
+  .home-head{background:linear-gradient(135deg,var(--navy),#2b5ba8);padding:40px 50px;color:#fff}
+  .eyebrow{margin:0 0 8px;color:#cfe1ff;font-size:.73rem;font-weight:700;letter-spacing:.13em}
+  .home-head h1{margin:0;font-size:clamp(2rem,5vw,3rem);line-height:1.12}
+  .home-body{padding:32px 50px 42px}
+  .course-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin-bottom:30px}
+  .info-box{background:#f7f9fc;border:1px solid #e6ebf2;border-radius:12px;padding:15px}
+  .info-box span{display:block;color:var(--muted);font-size:.74rem;font-weight:700;letter-spacing:.04em;margin-bottom:4px}
+  .info-box strong{font-size:.97rem}
+  .form-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px}
+  label{display:block;font-size:.88rem;font-weight:700;margin-bottom:7px}
+  input{width:100%;border:1px solid #bdc7d7;border-radius:9px;padding:12px 13px;background:#fff;color:var(--ink);outline:none}
+  input:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(37,99,235,.15)}
+  .note{color:var(--muted);font-size:.84rem;margin:18px 0 0}
+  .btn{border:0;border-radius:9px;padding:12px 17px;min-height:43px;font-weight:700}
+  .btn-primary{background:var(--blue);color:#fff;box-shadow:0 7px 16px rgba(37,99,235,.22)}
+  .btn-primary:hover{background:var(--blue-dark)}
+  .btn-secondary{background:#fff;border:1px solid #cfd8e6;color:#334155}
+  .btn-review{background:var(--soft-amber);border:1px solid #f2ca83;color:var(--amber)}
+  .btn-danger{background:var(--soft-red);border:1px solid #eca3a3;color:var(--red);width:100%}
+  .home .btn{margin-top:26px}
+
+  .exam-header{display:flex;justify-content:space-between;align-items:flex-start;gap:24px;margin-bottom:21px}
+  .exam-header h1{font-size:clamp(1.45rem,3vw,2rem);margin:0}
+  .exam-header p{color:var(--muted);margin:6px 0 0}
+  .progress-area{min-width:min(300px,36vw);text-align:right}
+  .progress-label{color:var(--muted);font-size:.82rem;font-weight:700;margin-bottom:7px}
+  .progress-track{height:9px;background:#dce4f1;border-radius:999px;overflow:hidden}
+  .progress-bar{height:100%;background:linear-gradient(90deg,var(--blue),#04a6c9);width:0%;transition:width .2s ease}
+
+  .exam-layout{display:grid;grid-template-columns:minmax(0,1fr) 280px;gap:22px;align-items:start}
+  .card{background:var(--paper);border:1px solid #e3e9f2;border-radius:17px;box-shadow:0 8px 24px rgba(21,42,82,.06)}
+  .question-card{padding:34px}
+  .question-meta{display:flex;justify-content:space-between;gap:12px;align-items:center;margin-bottom:22px}
+  .pill{display:inline-block;border-radius:999px;padding:7px 11px;background:var(--soft-blue);color:#2352a0;font-size:.78rem;font-weight:700}
+  .pill.review{background:var(--soft-amber);color:var(--amber)}
+  .question-type{color:#2456a7;font-size:.75rem;font-weight:700;letter-spacing:.08em;margin-bottom:10px}
+  .question-text{font-size:clamp(1.1rem,2vw,1.32rem);line-height:1.55;margin:0 0 24px}
+  .options{display:grid;gap:11px}
+  .option{display:flex;align-items:flex-start;gap:13px;padding:14px;border:1px solid #d5ddea;border-radius:11px;background:#fff;cursor:pointer;transition:.15s}
+  .option:hover{border-color:#87a8df;background:#f7faff}
+  .option.selected{border-color:var(--blue);background:#eff6ff;box-shadow:0 0 0 2px rgba(37,99,235,.12)}
+  .option input{width:auto;margin:4px 0 0}
+  .option-letter{display:grid;place-items:center;flex:0 0 27px;height:27px;border-radius:50%;background:#edf1f6;font-size:.78rem;font-weight:700}
+  .option.selected .option-letter{background:var(--blue);color:#fff}
+  .question-actions{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:30px}
+  .right-actions{display:flex;gap:10px}
+  .nav-card{padding:20px;position:sticky;top:18px}
+  .nav-card h2{font-size:1rem;margin:0 0 6px}
+  .nav-card p{font-size:.8rem;color:var(--muted);margin:0 0 15px}
+  .question-nav{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
+  .q-nav{height:39px;border:1px solid #cbd5e1;background:#fff;color:#334155;border-radius:8px;font-size:.8rem;font-weight:700;position:relative}
+  .q-nav.current{border-color:var(--blue);outline:3px solid rgba(37,99,235,.16)}
+  .q-nav.answered{background:#e9f8ef;color:#166534;border-color:#8ad2a3}
+  .q-nav.flagged::after{content:"";position:absolute;top:4px;right:4px;width:6px;height:6px;background:#e98d16;border-radius:50%}
+  .key{margin:15px 0;color:var(--muted);font-size:.76rem;line-height:1.8}
+  .key i{display:inline-block;width:10px;height:10px;border-radius:3px;background:#fff;border:1px solid #cbd5e1;margin-right:6px}
+  .key .done{background:#e9f8ef;border-color:#8ad2a3}
+  .key .mark{background:#e98d16;border:0;border-radius:50%}
+
+  .lock-wrap{min-height:100vh;display:grid;place-items:center;padding:24px;background:linear-gradient(135deg,#182238,#4a1f2a)}
+  .lock-card{width:min(560px,100%);background:#fff;border-radius:18px;padding:34px;box-shadow:0 24px 70px rgba(0,0,0,.35)}
+  .lock-icon{width:52px;height:52px;border-radius:14px;display:grid;place-items:center;background:#fee4e2;color:var(--red);font-size:1.45rem}
+  .lock-card h1{margin:17px 0 8px;font-size:1.8rem}
+  .lock-card p{color:var(--muted)}
+  .code-box{padding:13px;background:#fff7ed;border:1px solid #fed7aa;border-radius:9px;color:#9a3412;font-family:"Courier New",monospace;margin:20px 0}
+  .teacher-section{border-top:1px solid #e5e7eb;margin-top:22px;padding-top:20px}
+  .error{color:var(--red);font-size:.83rem;margin:9px 0 0}
+  .audit-note{color:var(--muted);font-size:.76rem;margin-top:10px}
+  .gate-row{display:flex;gap:10px}
+  .gate-row input{flex:1}
+
+  .result-card{padding:38px}
+  .result-top{display:flex;align-items:center;justify-content:space-between;gap:24px;flex-wrap:wrap}
+  .result-top h1{margin:0;font-size:clamp(1.7rem,3.5vw,2.35rem)}
+  .student-line{color:var(--muted);margin:8px 0 0}
+  .score-circle{width:125px;height:125px;border-radius:50%;display:grid;place-items:center;background:conic-gradient(var(--blue) calc(var(--score,0)*1%),#e4e9f2 0);position:relative}
+  .score-circle::before{content:"";width:99px;height:99px;background:#fff;border-radius:50%;position:absolute}
+  .score-circle div{position:relative;text-align:center}
+  .score-circle b{font-size:1.45rem;display:block}
+  .score-circle span{font-size:.72rem;color:var(--muted)}
+  .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:30px 0}
+  .stat{padding:16px;border:1px solid #e1e8f1;border-radius:12px;background:#fbfdff}
+  .stat b{display:block;font-size:1.55rem;margin-bottom:4px}
+  .stat span{color:var(--muted);font-size:.8rem;font-weight:700}
+
+  .loading-wrap{min-height:100vh;display:grid;place-items:center;padding:24px}
+  .loading-card{width:min(480px,100%);background:var(--paper);border-radius:18px;padding:40px;box-shadow:var(--shadow);text-align:center}
+  .spinner{width:38px;height:38px;border-radius:50%;border:4px solid #dce4f1;border-top-color:var(--blue);margin:0 auto 18px;animation:spin 1s linear infinite}
+  @keyframes spin{to{transform:rotate(360deg)}}
+
+  .hidden{display:none}
+
+  @media (max-width:800px){
+    .exam-layout{grid-template-columns:1fr}
+    .nav-card{position:static}
+    .exam-header{display:block}
+    .progress-area{min-width:0;text-align:left;margin-top:16px}
+  }
+  @media (max-width:560px){
+    .home-head,.home-body{padding-left:24px;padding-right:24px}
+    .course-grid,.form-grid,.stats{grid-template-columns:1fr}
+    .topbar{padding:14px 18px}
+    .topic-badge{font-size:.65rem}
+    .question-card,.result-card{padding:22px}
+    .question-actions,.gate-row{flex-direction:column;align-items:stretch}
+    .right-actions{display:flex}
+    .right-actions .btn{flex:1}
+    .question-actions .btn{width:100%}
+    .gate-row .btn{width:100%}
+  }
+  @media print{
+    body{background:#fff}
+    .topbar,.gate-row{display:none!important}
+    .pagewidth{width:100%;padding:0}
+    .card{box-shadow:none;border:0}
+    .result-card{padding:0}
+    .score-circle{display:none}
+  }
+</style>
+</head>
+<body>
+<div id="app"></div>
+
+<script>
+/*
+  =====================================================================
+  CONTRATO CON EL BACKEND (Google Apps Script)
+  =====================================================================
+  Este archivo NO contiene el banco de preguntas ni las respuestas
+  correctas: todo eso vive en el servidor. El cliente solo envía datos
+  del estudiante y sus respuestas, y el servidor responde.
+
+  Se usa un único endpoint (Apps Script "exec") con un campo "action"
+  en el cuerpo JSON para distinguir la operación solicitada. El
+  servidor debe implementar doPost(e) y despachar según e.postData
+  (o doGet si se prefiere GET con parámetros), devolviendo JSON y
+  encabezados CORS habilitados para que fetch() funcione desde
+  GitHub Pages.
+
+  Acciones esperadas:
+
+  1) action = "start"
+     Envía:  { action:"start", firstName, lastName, email }
+     Recibe: { ok:true, examId:"...", questions:[
+                 { id, prompt, options:[...], type }   // SIN "answer"
+               ] }
+
+  2) action = "submit"
+     Envía:  { action:"submit", examId, firstName, lastName, email,
+               answers: { "<idPregunta>": "<opcionElegida>", ... } }
+     Recibe: { ok:true, correct, total, percentage, message }
+             (la calificación la calcula el servidor, que sí conoce
+              las respuestas correctas)
+
+  3) action = "audit"
+     Envía:  { action:"audit", examId, firstName, lastName, email,
+               event:{ type, timestamp, referenceCode } }
+     Recibe: { ok:true }  (se envía "sin esperar" -> mejor esfuerzo,
+               debe quedar registrado en el servidor aunque el
+               estudiante recargue la página)
+
+  4) action = "unlock"
+     Envía:  { action:"unlock", examId, firstName, lastName, email,
+               referenceCode, code }
+     Recibe: { ok:true }  si el código que escribió el profesor es
+               válido, o { ok:false, message } si no lo es.
+             El código de desbloqueo NUNCA vive en este archivo: el
+             profesor lo escribe a mano y el servidor decide si es
+             correcto.
+  =====================================================================
+*/
+
+// URL del Google Apps Script publicado como aplicación web.
+var APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxb-XgcwSa8isVJvBf1_H5RKL74MfXhJ9c6PhAfuQx6_eFTVcrEEmatchyWqfsMaXyTvA/exec";
+
+// Envoltura simple sobre fetch para hablar con Apps Script.
+function callServer(payload) {
+  return fetch(APPS_SCRIPT_URL, {
+    method: "POST",
+    headers: { "Content-Type": "text/plain;charset=utf-8" }, // evita preflight CORS con Apps Script
+    body: JSON.stringify(payload)
+  }).then(function (res) {
+    return res.json();
+  });
+}
+
+// ------------------------- ESTADO EN MEMORIA -------------------------
+var state = {
+  screen: "home",           // home | loading | exam | lock | submitting | result | error
+  student: { firstName: "", lastName: "", email: "" },
+  examId: null,
+  questions: [],            // preguntas recibidas del servidor (sin respuesta correcta)
+  answers: {},              // respuestas del estudiante, solo en memoria del navegador
+  flags: {},
+  current: 0,
+  active: false,            // true mientras el examen está en curso y sin bloquear
+  locked: false,
+  lockReferenceCode: "",
+  lockEventType: "",
+  result: null,             // { correct, total, percentage, message } que confirma el servidor
+  errorMessage: ""
+};
+
+// ------------------------------ UTILIDADES ------------------------------
+function esc(t) {
+  return String(t == null ? "" : t)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
+function answeredCount() {
+  return Object.keys(state.answers).length;
+}
+
+function generateReferenceCode() {
+  var t = Date.now().toString(36).toUpperCase();
+  var r = Math.random().toString(36).slice(2, 6).toUpperCase();
+  return "REF-" + t + "-" + r;
+}
+
+// Solicita pantalla completa. Debe llamarse SIEMPRE de forma síncrona
+// dentro de un manejador de clic, nunca tras un "await" ni al cargar
+// la página, porque los navegadores exigen un gesto de usuario vigente.
+function requestFullscreenNow() {
+  try {
+    if (!document.fullscreenElement && document.documentElement.requestFullscreen) {
+      document.documentElement.requestFullscreen();
+    }
+  } catch (e) { /* si el navegador la rechaza, seguimos sin pantalla completa */ }
+}
+
+// ------------------------------- RENDER ---------------------------------
+function render() {
+  var app = document.getElementById("app");
+  document.body.className = (state.screen === "exam") ? "exam-active" : "";
+  if (state.screen === "home") { app.innerHTML = homeTemplate(); return; }
+  if (state.screen === "loading" || state.screen === "submitting") { app.innerHTML = loadingTemplate(); return; }
+  if (state.screen === "exam") { app.innerHTML = examTemplate(); return; }
+  if (state.screen === "lock") { app.innerHTML = lockTemplate(); return; }
+  if (state.screen === "result") { app.innerHTML = resultsTemplate(); return; }
+  app.innerHTML = errorTemplate();
+}
+
+function homeTemplate() {
+  return '' +
+  '<main class="home"><section class="home-card">' +
+    '<div class="home-head">' +
+      '<p class="eyebrow">ASSESSMENT PORTAL</p>' +
+      '<h1>Unit 11 and 12 Assessment</h1>' +
+    '</div>' +
+    '<div class="home-body">' +
+      '<div class="course-grid">' +
+        '<div class="info-box"><span>SUBJECT</span><strong>English IV - 2026-2</strong></div>' +
+        '<div class="info-box"><span>ASSESSED TOPIC</span><strong>Unit 11 and 12</strong></div>' +
+        '<div class="info-box"><span>INSTRUCTOR</span><strong>Alberto Suzuki</strong></div>' +
+        '<div class="info-box"><span>ASSESSMENT FORMAT</span><strong>Preguntas de opción múltiple</strong></div>' +
+      '</div>' +
+      '<div class="form-grid">' +
+        '<div><label for="firstName">Nombre</label><input id="firstName" autocomplete="given-name" placeholder="Escribe tu nombre"></div>' +
+        '<div><label for="lastName">Apellido</label><input id="lastName" autocomplete="family-name" placeholder="Escribe tu apellido"></div>' +
+        '<div><label for="email">Correo institucional</label><input id="email" type="email" autocomplete="email" placeholder="nombre@institucion.edu"></div>' +
+      '</div>' +
+      (state.errorMessage ? '<p class="error">' + esc(state.errorMessage) + '</p>' : '') +
+      '<p class="note">Verifica que tu nombre, apellido y correo institucional estén escritos correctamente antes de iniciar. Al hacer clic, el examen pasará a pantalla completa y no deberás salir de ella hasta terminar.</p>' +
+      '<button class="btn btn-primary" onclick="startAssessment()">Iniciar examen</button>' +
+    '</div>' +
+  '</section></main>';
+}
+
+function loadingTemplate() {
+  var msg = (state.screen === "submitting")
+    ? "Enviando tus respuestas al servidor para calificación..."
+    : "Cargando las preguntas del examen...";
+  return '' +
+  '<main class="loading-wrap"><section class="loading-card">' +
+    '<div class="spinner"></div>' +
+    '<p>' + esc(msg) + '</p>' +
+  '</section></main>';
+}
+
+function errorTemplate() {
+  return '' +
+  '<main class="loading-wrap"><section class="loading-card">' +
+    '<h1 style="font-size:1.3rem;margin-top:0">No se pudo continuar</h1>' +
+    '<p class="error">' + esc(state.errorMessage || "Ocurrió un error de comunicación con el servidor.") + '</p>' +
+    '<button class="btn btn-primary" onclick="location.reload()">Reintentar</button>' +
+  '</section></main>';
+}
+
+function examTemplate() {
+  var q = state.questions[state.current];
+  var options = q.options.map(function (o, i) {
+    var selected = state.answers[q.id] === o;
+    return '<label class="option' + (selected ? " selected" : "") + '">' +
+      '<input type="radio" name="answer" value="' + esc(o) + '" ' + (selected ? "checked" : "") + ' onchange="saveAnswer(this.value)">' +
+      '<span class="option-letter">' + String.fromCharCode(65 + i) + '</span>' +
+      '<span>' + esc(o) + '</span>' +
+    '</label>';
+  }).join("");
+
+  var nav = state.questions.map(function (item, i) {
+    var cls = "q-nav" +
+      (i === state.current ? " current" : "") +
+      (state.answers[item.id] ? " answered" : "") +
+      (state.flags[item.id] ? " flagged" : "");
+    return '<button class="' + cls + '" onclick="goToQuestion(' + i + ')">' + (i + 1) + '</button>';
+  }).join("");
+
+  return '' +
+  '<header class="topbar"><div class="brand">Unit 11 and 12 Assessment</div><div class="topic-badge">English IV - 2026-2</div></header>' +
+  '<main class="pagewidth">' +
+    '<div class="exam-header">' +
+      '<div><h1>Assessment in progress</h1><p>Student: ' + esc(state.student.firstName) + ' ' + esc(state.student.lastName) + '</p></div>' +
+      '<div class="progress-area">' +
+        '<div class="progress-label">' + answeredCount() + ' of ' + state.questions.length + ' answered</div>' +
+        '<div class="progress-track"><div class="progress-bar" style="width:' + (answeredCount() / state.questions.length * 100) + '%"></div></div>' +
+      '</div>' +
+    '</div>' +
+    '<div class="exam-layout">' +
+      '<section class="card question-card">' +
+        '<div class="question-meta">' +
+          '<span class="pill">Question ' + (state.current + 1) + ' of ' + state.questions.length + '</span>' +
+          (state.flags[q.id] ? '<span class="pill review">Marked for review</span>' : '') +
+        '</div>' +
+        (q.type ? '<div class="question-type">' + esc(String(q.type).toUpperCase()) + '</div>' : '') +
+        '<h2 class="question-text">' + esc(q.prompt) + '</h2>' +
+        '<div class="options">' + options + '</div>' +
+        '<div class="question-actions">' +
+          '<button class="btn btn-review" onclick="toggleFlag()">' + (state.flags[q.id] ? "Remove review mark" : "Mark for review") + '</button>' +
+          '<div class="right-actions">' +
+            '<button class="btn btn-secondary" ' + (state.current === 0 ? "disabled" : "") + ' onclick="previousQuestion()">Previous</button>' +
+            (state.current < state.questions.length - 1
+              ? '<button class="btn btn-primary" onclick="nextQuestion()">Next</button>'
+              : '<button class="btn btn-primary" onclick="submitAssessment()">Finish assessment</button>') +
+          '</div>' +
+        '</div>' +
+      '</section>' +
+      '<aside class="card nav-card">' +
+        '<h2>Question navigation</h2>' +
+        '<p>Choose any question. Mark questions you want to revisit.</p>' +
+        '<div class="question-nav">' + nav + '</div>' +
+        '<div class="key"><i class="done"></i>Answered<br><i></i>Not answered<br><i class="mark"></i>Marked for review</div>' +
+        '<button class="btn btn-danger" onclick="submitAssessment()">Submit assessment</button>' +
+      '</aside>' +
+    '</div>' +
+  '</main>';
+}
+
+function lockTemplate() {
+  return '' +
+  '<main class="lock-wrap"><section class="lock-card">' +
+    '<div class="lock-icon">&#128274;</div>' +
+    '<h1>Assessment locked</h1>' +
+    '<p>Se detectó que saliste de la ventana del examen (' + esc(state.lockEventType) + '). La sesión quedó bloqueada y el evento fue registrado en el servidor.</p>' +
+    '<div class="code-box">Código de referencia: ' + esc(state.lockReferenceCode) + '</div>' +
+    '<p class="audit-note">Comparte este código con tu profesor por el canal que te indique (por ejemplo, Teams) para solicitar el desbloqueo.</p>' +
+    '<div class="teacher-section">' +
+      '<label for="unlockCode">Código de desbloqueo del profesor</label>' +
+      '<div class="gate-row">' +
+        '<input id="unlockCode" placeholder="Escribe el código proporcionado por tu profesor" onkeydown="if(event.key===\'Enter\')unlockAssessment()">' +
+        '<button class="btn btn-primary" onclick="unlockAssessment()">Desbloquear</button>' +
+      '</div>' +
+      '<p id="unlockError" class="error"></p>' +
+    '</div>' +
+  '</section></main>';
+}
+
+function resultsTemplate() {
+  var r = state.result || { correct: 0, total: state.questions.length, percentage: 0, message: "" };
+  return '' +
+  '<header class="topbar"><div class="brand">Unit 11 and 12 Assessment</div><div class="topic-badge">Results</div></header>' +
+  '<main class="pagewidth"><section class="card result-card">' +
+    '<div class="result-top">' +
+      '<div>' +
+        '<p class="eyebrow" style="color:#2456a7">ASSESSMENT COMPLETE</p>' +
+        '<h1>Your assessment results</h1>' +
+        '<p class="student-line">' + esc(state.student.firstName) + ' ' + esc(state.student.lastName) + ' &middot; Unit 11 and 12</p>' +
+      '</div>' +
+      '<div class="score-circle" style="--score:' + r.percentage + '"><div><b>' + r.percentage + '%</b><span>Final score</span></div></div>' +
+    '</div>' +
+    '<div class="stats">' +
+      '<div class="stat"><b>' + r.correct + '</b><span>Correct answers</span></div>' +
+      '<div class="stat"><b>' + (r.total - r.correct) + '</b><span>Incorrect answers</span></div>' +
+      '<div class="stat"><b>' + r.total + '</b><span>Total questions</span></div>' +
+    '</div>' +
+    (r.message ? '<p class="note">' + esc(r.message) + '</p>' : '') +
+    '<p class="note">La calificación fue calculada y confirmada por el servidor; este archivo nunca tuvo acceso a las respuestas correctas.</p>' +
+  '</section></main>';
+}
+
+// ------------------------------ ACCIONES ---------------------------------
+
+function startAssessment() {
+  var firstName = document.getElementById("firstName").value.trim();
+  var lastName = document.getElementById("lastName").value.trim();
+  var email = document.getElementById("email").value.trim();
+  var emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+
+  if (!firstName || !lastName || !email) {
+    state.errorMessage = "Por favor completa nombre, apellido y correo institucional antes de iniciar.";
+    render();
+    return;
+  }
+  if (!emailOk) {
+    state.errorMessage = "Escribe un correo institucional válido.";
+    render();
+    return;
+  }
+  state.errorMessage = "";
+  state.student = { firstName: firstName, lastName: lastName, email: email };
+
+  // Importante: la pantalla completa se solicita AQUÍ, de forma síncrona,
+  // dentro del propio clic del botón "Iniciar examen". Nunca se solicita
+  // automáticamente al cargar la página.
+  requestFullscreenNow();
+
+  state.screen = "loading";
+  render();
+
+  callServer({ action: "start", firstName: firstName, lastName: lastName, email: email })
+    .then(function (data) {
+      if (!data || !data.ok || !Array.isArray(data.questions)) {
+        throw new Error((data && data.message) || "El servidor no devolvió preguntas válidas.");
+      }
+      state.examId = data.examId || null;
+      state.questions = data.questions; // ya viene sin respuestas correctas
+      state.answers = {};
+      state.flags = {};
+      state.current = 0;
+      state.active = true;
+      state.locked = false;
+      state.screen = "exam";
+      render();
+    })
+    .catch(function (err) {
+      state.errorMessage = "No se pudieron cargar las preguntas: " + err.message;
+      state.screen = "error";
+      render();
+    });
+}
+
+function saveAnswer(value) {
+  var q = state.questions[state.current];
+  state.answers[q.id] = value; // solo en memoria del navegador
+  render();
+}
+
+function goToQuestion(index) { state.current = index; render(); }
+function previousQuestion() { if (state.current > 0) { state.current--; render(); } }
+function nextQuestion() { if (state.current < state.questions.length - 1) { state.current++; render(); } }
+function toggleFlag() {
+  var id = state.questions[state.current].id;
+  state.flags[id] = !state.flags[id];
+  render();
+}
+
+function submitAssessment() {
+  state.active = false;
+  state.screen = "submitting";
+  render();
+
+  callServer({
+    action: "submit",
+    examId: state.examId,
+    firstName: state.student.firstName,
+    lastName: state.student.lastName,
+    email: state.student.email,
+    answers: state.answers
+  }).then(function (data) {
+    if (!data || !data.ok) {
+      throw new Error((data && data.message) || "El servidor no confirmó la calificación.");
+    }
+    // El resultado solo se muestra cuando el servidor lo confirma.
+    state.result = {
+      correct: data.correct,
+      total: data.total,
+      percentage: data.percentage,
+      message: data.message || ""
+    };
+    state.screen = "result";
+    render();
+  }).catch(function (err) {
+    state.errorMessage = "No se pudo calificar el examen: " + err.message + ". Tus respuestas siguen guardadas en memoria; puedes intentar enviarlas de nuevo.";
+    state.active = true; // permite reintentar el envío sin perder respuestas
+    state.screen = "exam";
+    render();
+    alert(state.errorMessage);
+  });
+}
+
+// --------------------------- BLOQUEO DE PANTALLA ---------------------------
+// Se usa exactamente: Page Visibility API (visibilitychange + document.hidden),
+// el evento blur en window, y fullscreenchange + document.fullscreenElement.
+
+function sendAudit(eventType) {
+  var evt = { type: eventType, timestamp: new Date().toISOString(), referenceCode: state.lockReferenceCode };
+  // Fetch de auditoría: se envía de inmediato para que quede registro en el
+  // servidor aunque el estudiante recargue o cierre la página después.
+  callServer({
+    action: "audit",
+    examId: state.examId,
+    firstName: state.student.firstName,
+    lastName: state.student.lastName,
+    email: state.student.email,
+    event: evt
+  }).catch(function () { /* mejor esfuerzo: no bloquea la UI si falla */ });
+}
+
+function triggerLock(eventType) {
+  if (!state.active || state.locked) return;
+  state.active = false;
+  state.locked = true;
+  state.lockEventType = eventType;
+  state.lockReferenceCode = generateReferenceCode();
+  state.screen = "lock";
+  render();
+  sendAudit(eventType);
+}
+
+document.addEventListener("visibilitychange", function () {
+  if (document.hidden) triggerLock("visibility");
+});
+
+window.addEventListener("blur", function () {
+  triggerLock("blur");
+});
+
+document.addEventListener("fullscreenchange", function () {
+  if (state.active && !document.fullscreenElement) triggerLock("fullscreen");
+});
+
+function unlockAssessment() {
+  var input = document.getElementById("unlockCode");
+  var error = document.getElementById("unlockError");
+  var code = input.value.trim();
+  error.textContent = "";
+
+  if (!code) {
+    error.textContent = "Escribe el código que te dio tu profesor.";
+    return;
+  }
+
+  // Intentamos recuperar la pantalla completa dentro del propio clic
+  // (gesto de usuario), antes de esperar la respuesta del servidor.
+  requestFullscreenNow();
+
+  callServer({
+    action: "unlock",
+    examId: state.examId,
+    firstName: state.student.firstName,
+    lastName: state.student.lastName,
+    email: state.student.email,
+    referenceCode: state.lockReferenceCode,
+    code: code
+  }).then(function (data) {
+    if (!data || !data.ok) {
+      error.textContent = (data && data.message) || "Código de desbloqueo incorrecto.";
+      return;
+    }
+    state.locked = false;
+    state.active = true;
+    state.screen = "exam";
+    render();
+  }).catch(function () {
+    error.textContent = "No se pudo verificar el código con el servidor. Intenta de nuevo.";
+  });
+}
+
+// -------------------------------- INICIO ----------------------------------
+render();
+</script>
+</body>
+</html>
